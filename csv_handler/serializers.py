@@ -28,3 +28,8 @@ class CSVFileUploadSerializer(serializers.Serializer):
         validators=[validate_is_csv], 
         help_text="The target CSV file for reconciliation."
     )
+    unique_fields = serializers.CharField(
+        required=True,
+        allow_blank=False,
+        help_text="comma separated list of unique columns that should be used to identify individual records"
+    )

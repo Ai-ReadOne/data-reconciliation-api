@@ -53,6 +53,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_spectacular',
     'rest_framework.authtoken',
+    'csv_handler',
+    'data_reconciler',
 ]
 
 MIDDLEWARE = [

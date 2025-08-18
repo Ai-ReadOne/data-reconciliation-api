@@ -11,19 +11,10 @@ class CSVFileUploadViewTests(APITestCase):
         self.target_file = SimpleUploadedFile("target.csv", self.dummy_csv, content_type="text/csv")
         self.dummy_txt = b"not,a,csv\nfile,content\n"
 
-    def test_upload_both_files_success(self):
-        response = self.client.post(
-            self.url,
-            {'source_file': self.source_file, 'target_file': self.target_file},
-            format='multipart'
-        )
-        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
-        self.assertIn('message', response.data)
-
     def test_upload_missing_source_file(self):
         response = self.client.post(
             self.url,
-            {'target_file': self.target_file},
+            {'target_file': self.target_file, "unique_fields": "col1,col2"},
             format='multipart'
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -32,14 +23,14 @@ class CSVFileUploadViewTests(APITestCase):
     def test_upload_missing_target_file(self):
         response = self.client.post(
             self.url,
-            {'source_file': self.source_file},
+            {'source_file': self.source_file, "unique_fields": "col1,col2"},
             format='multipart'
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('target_file', response.data)
 
     def test_upload_no_files(self):
-        response = self.client.post(self.url, {}, format='multipart')
+        response = self.client.post(self.url, {"unique_fields": "col1,col2"}, format='multipart')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('source_file', response.data)
         self.assertIn('target_file', response.data)
@@ -49,7 +40,11 @@ class CSVFileUploadViewTests(APITestCase):
         target_file = SimpleUploadedFile("target.csv", self.dummy_csv, content_type="text/csv")
         response = self.client.post(
             self.url,
-            {'source_file': source_file, 'target_file': target_file},
+            {
+                'source_file': source_file, 
+                'target_file': target_file,
+                "unique_fields": "col1,col2"
+            },
             format='multipart'
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -73,9 +68,36 @@ class CSVFileUploadViewTests(APITestCase):
         target_file = SimpleUploadedFile("target.txt", self.dummy_txt, content_type="text/plain")
         response = self.client.post(
             self.url,
-            {'source_file': source_file, 'target_file': target_file},
+            {
+                'source_file': source_file, 
+                'target_file': target_file,
+                "unique_fields": "col1,col2"
+            },
             format='multipart'
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('source_file', response.data)
         self.assertIn('target_file', response.data)
+    
+    def test_upload_missing_unique_fields(self):
+        response = self.client.post(
+            self.url,
+            {'source_file': self.source_file, 
+             'target_file': self.target_file,
+            },
+            format='multipart'
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('unique_fields', response.data)
+
+    def test_upload_both_files_success(self):
+        response = self.client.post(
+            self.url,
+            {'source_file': self.source_file, 
+             'target_file': self.target_file,
+             "unique_fields": "col1,col2"
+            },
+            format='multipart'
+        )
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+        self.assertIn('message', response.data)
