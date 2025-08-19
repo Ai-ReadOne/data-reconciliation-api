@@ -63,8 +63,8 @@ class DataReconciler:
 
         if source_df.equals(target_df):
             return {
-                "only_in_source": [],
-                "only_in_target": [],
+                "missing_in_source": [],
+                "missing_in_target": [],
                 "discrepancies": []
             }
 

@@ -18,6 +18,7 @@ class CSVDataReport(models.Model):
             ('processing', 'Processing'), 
             ('completed', 'Completed'), 
             ('failed', 'Failed')
-        ]
+        ],
+        default='processing'
     )
     report = models.JSONField(null=True, blank=True)

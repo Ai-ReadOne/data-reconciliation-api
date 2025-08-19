@@ -39,3 +39,8 @@ class CSVDataReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = CSVDataReport
         fields = ['unique_fields', 'source_file', 'target_file']
+
+class ListCSVDataReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CSVDataReport
+        fields = ['id', 'created_at', 'updated_at', 'status']

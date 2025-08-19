@@ -144,3 +144,29 @@ SPECTACULAR_SETTINGS = {
 
 MEDIA_ROOT = os.path.join(PROJECT_BASE, "media")
 MEDIA_URL = os.path.join(PROJECT_BASE, "media/")
+
+# media storage config
+GCLOUD_SUPPORT = bool(env("RECONCILIATION_GCLOUD_SUPPORT", default=True))
+GOOGLE_APPLICATION_CREDENTIALS = env("RECONCILIATION_GOOGLE_APPLICATION_CREDENTIALS", default="")
+GS_BUCKET_NAME = env("RECONCILIATION_GS_BUCKET_NAME", default="data-reconciliation")
+if GCLOUD_SUPPORT:
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+        },
+        "staticfiles": "storages.backends.gcloud.GoogleCloudStorage",
+    }
+    MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
+
+else:
+    MEDIA_ROOT = os.path.join(PROJECT_BASE, "media")
+    MEDIA_URL = os.path.join(PROJECT_BASE, "media/")
+
+
+# Celery Config
+CELERY_BROKER_URL = env("RECONCILIATION_CELERY_BROKER_URL", default="redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = env("RECONCILIATION_CELERY_RESULT_BACKEND", default="redis://localhost:6379/0")
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE

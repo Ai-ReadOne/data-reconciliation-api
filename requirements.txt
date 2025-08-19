@@ -6,3 +6,6 @@ psycopg2==2.9.10
 uvicorn==0.35.0
 pandas==2.3.1
 django-storages[google]==1.14.6
+celery==5.5.3
+redis==6.4.0
+pytest==8.4.1
