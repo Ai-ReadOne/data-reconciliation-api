@@ -1,0 +1,61 @@
+services:
+  db:
+    image: postgres:17-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=${RECONCILIATION_DATABASE_USER}
+      - POSTGRES_PASSWORD=${RECONCILIATION_DATABASE_PASSWORD}
+      - POSTGRES_DB=${RECONCILIATION_DATABASE_NAME}
+    ports:
+      - "5432:5432"
+
+
+  redis:
+    image: redis:6-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["/start.sh"]
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - RECONCILIATION_CELERY_BROKER_URL=redis://redis:6379/0
+      - RECONCILIATION_CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_started
+      redis:
+        condition: service_healthy
+
+  worker:
+    build: .
+    command: celery -A data_reconciliation_api worker -l info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    environment:
+      - RECONCILIATION_CELERY_BROKER_URL=redis://redis:6379/0
+      - RECONCILIATION_CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_started
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

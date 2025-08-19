@@ -1,5 +1,4 @@
 import uuid
-from typing import Dict
 from django.http import HttpResponse
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework.response import Response
@@ -20,7 +19,7 @@ from .tasks import reconcile_csv_files
         request=CSVDataReportSerializer,
         responses={
             202: {"job_id": "UUID", "status": "processing"},
-            400: {"description": Dict[str, str]},
+            400: dict,
         },
         auth=[],
     ),
@@ -54,7 +53,7 @@ class CSVReconciliationViewSet(viewsets.ViewSet):
         summary="get list of all submitted reconciliation jobs",
         description="get list of all submitted reconciliation jobs, returning their status and id",
         responses={
-            201: ListCSVDataReportSerializer,
+            200: ListCSVDataReportSerializer,
             400: {"description": "Invalid input job_id."},
             500: {"description": "unexpected error"},
         
