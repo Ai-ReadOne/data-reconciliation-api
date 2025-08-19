@@ -17,8 +17,7 @@ class CSVReconciliationViewSet(viewsets.ViewSet):
     Handles CSV file uploads for reconciliation and report retrieval.
     """
 
-    @action(detail=False, methods=["post"], url_path="", url_name="create-report")
-    def post(self, request):
+    def create(self, request):
         serializer = CSVDataReportSerializer(data=request.data)
         if serializer.is_valid():
             csv_upload = serializer.save()

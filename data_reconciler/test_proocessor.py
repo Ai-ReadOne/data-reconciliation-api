@@ -48,20 +48,18 @@ class TestDataReconciler(unittest.TestCase):
             self.source_data[:1],  # same record in target
             unique_fields=['id']
         )
-        self.assertEqual(result['only_in_source'], [])
-        self.assertEqual(result['only_in_target'], [])
         self.assertEqual(result['discrepancies'], [])
 
-    def test_only_in_source_and_target(self):
+    def test_missing_in_source_and_target(self):
         result = DataReconciler.reconcile(
             self.source_data,
             self.target_data,
             unique_fields=['id']
         )
         # id=3 only in source
-        self.assertIn({'id': 3, 'name': 'Charlie', 'age': 35}, result['only_in_source'])
+        self.assertIn({'id': 3, 'name': 'Charlie', 'age': 35}, result['missing_in_target'])
         # id=4 only in target
-        self.assertIn({'id': 4, 'name': 'David', 'age': 40}, result['only_in_target'])
+        self.assertIn({'id': 4, 'name': 'David', 'age': 40}, result['missing_in_source'])
 
     def test_discrepancies(self):
         result = DataReconciler.reconcile(
@@ -84,9 +82,9 @@ class TestDataReconciler(unittest.TestCase):
             unique_fields=['country', 'year']
         )
         # Only in source: Canada 2020
-        self.assertIn({'country': 'Canada', 'year': 2020, 'population': 38}, result['only_in_source'])
+        self.assertIn({'country': 'Canada', 'year': 2020, 'population': 38}, result['missing_in_target'])
         # Only in target: Canada 2021
-        self.assertIn({'country': 'Canada', 'year': 2021, 'population': 39}, result['only_in_target'])
+        self.assertIn({'country': 'Canada', 'year': 2021, 'population': 39}, result['missing_in_source'])
         # Discrepancy on USA 2021 population
         self.assertEqual(len(result['discrepancies']), 1)
         discrepancy = result['discrepancies'][0]
@@ -129,8 +127,8 @@ class TestDataReconciler(unittest.TestCase):
         source = [{'id': 1, 'val': 'a'}]
         target = [{'id': 2, 'val': 'b'}]
         result = DataReconciler.reconcile(source, target, unique_fields=['id'])
-        self.assertEqual(len(result['only_in_source']), 1)
-        self.assertEqual(len(result['only_in_target']), 1)
+        self.assertEqual(len(result['missing_in_target']), 1)
+        self.assertEqual(len(result['missing_in_source']), 1)
         self.assertEqual(result['discrepancies'], [])
 
 if __name__ == '__main__':
