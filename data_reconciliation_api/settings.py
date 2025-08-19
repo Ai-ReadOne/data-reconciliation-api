@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_spectacular',
     'rest_framework.authtoken',
+    'storages',
     'csv_handler',
     'data_reconciler',
 ]
@@ -125,12 +126,6 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# Firebase Settings
-FIREBASE_ADMIN_CREDENTIALS = env(
-    "FIREBASE_ADMIN_CREDENTIALS", 
-    default=os.path.join(PROJECT_BASE, "firebase-service-account.json")
-)
-
 # Django Rest Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -146,3 +141,6 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
 }
+
+MEDIA_ROOT = os.path.join(PROJECT_BASE, "media")
+MEDIA_URL = os.path.join(PROJECT_BASE, "media/")

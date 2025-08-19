@@ -1,6 +1,10 @@
-from django.urls import path
-from .views import CSVFileUploadView
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import CSVReconciliationViewSet
+
+router = DefaultRouter()
+router.register(r'', CSVReconciliationViewSet, basename='csv-reconciliation')
 
 urlpatterns = [
-    path('', CSVFileUploadView.as_view(), name='csv-file-upload'),
+    path('', include(router.urls)),
 ]
